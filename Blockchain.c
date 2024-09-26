@@ -23,8 +23,6 @@ typedef struct Block {
 
 
 
-sss
-
 
 
 int main()
