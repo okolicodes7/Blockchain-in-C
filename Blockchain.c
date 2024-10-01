@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #define MAX_NUMBER_OF_BLOCKCHAIN 20
 
+
 // first step i took is to create a struct that defines what a Block comprises off onchain. 
 // the componenets of a Block 
 typedef struct {
@@ -63,15 +64,22 @@ Block generate_block(Block oldblock, int nonce){
 // fourth step 
  bool validate_block(Block newblock, Block oldblock){
     if(newblock.index != oldblock.index + 1){
-        printf("BLOCK NOT VALID\n");
+        printf("INDEX NOT VALID\n");
         return false;
     }
     if(oldblock.hash != newblock.previousHash){
-        printf("HASH NOT VALID\n");
+        printf("PREVIOUS HASH NOT VALID\n");
         return false;
     }
-    if(newblock.hash != Hash_block(newblock)){
-        printf("INVALID BLOCK\n");
+
+    char hash1[SHA256_DIGEST_LENGTH];
+    char hash2[SHA256_DIGEST_LENGTH];
+
+    strcpy(hash1, (char*)Hash_block(oldblock));
+    strcpy(hash2, (char*)newblock.hash);
+
+    if(memcmp(hash1, hash2, SHA_DIGEST_LENGTH) == 0){
+        printf("NEW HASH NOT VALID\n");
         return false;
     }
 return true;
@@ -154,8 +162,11 @@ int main()
   puts("\n\n");
 
 // proceeds to generate the next block
+ printblock(genesisblock);
+
    Block newblock = generate_block(genesisblock, genesisblock.nonce + 1);
    printblock(newblock);
+   printf("IS VALID BLOCK: %d\n", validate_block(newblock, genesisblock));
 
    // printf("My Blockchain project!\n");
     return 0;
