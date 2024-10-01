@@ -96,28 +96,30 @@ return true;
      
  }
  */
-// step six (proceeds to create a print function that prints the all the elements in the Block struct)
-void printblock(Block block) {
-    printf("INDEX: %zu\n", block.index);
-    printf("TIMESTAMP: %d\n", block.timestamp);
-    printf("NONCE: %d\n", block.nonce);
-    if(block.previousHash == NULL){
+// step six (proceeds to create a print function that prints all the elements in the Block struct)
+void printblock(Block newblock) {
+    printf("INDEX: %zu\n", newblock.index);
+    printf("TIMESTAMP: %d\n", newblock.timestamp);
+    printf("NONCE: %d\n", newblock.nonce);
+    if(newblock.previousHash == NULL){
     printf("PREV HASH: NULL\n");
 } else {
     printf("PREV HASH: ");
     for(int i = 0; i < SHA256_DIGEST_LENGTH; i++){
-        if(block.previousHash != NULL){
-            printf("%02X", block.previousHash[i]);
+        if(newblock.previousHash != NULL){
+            printf("%02X", newblock.previousHash[i]);
         }
     }
     printf("\n");
 }
- if(block.hash == NULL){
+ if(newblock.hash == NULL){
     printf("HASH: NULL\n");
-} else {  
+} else { 
+      printf("HASH: ");
+   
     for(int i = 0; i < SHA256_DIGEST_LENGTH; i++){
-        if(block.previousHash != NULL){
-            printf("%02X", block.previousHash[i]);
+        if(newblock.hash != NULL){
+            printf("%02X", newblock.hash[i]);
         }
 }
   printf("\n");
@@ -138,15 +140,23 @@ void printblock(Block block) {
 int main()
 {
    // Block blockchain[MAX_NUMBER_OF_BLOCKCHAIN];
-   // initializing the different parameters passed in the block struct
-   
+
+   // initializing the different parameters passed in the block struct to form the GENESIS BLOCK
    Block genesisblock;
    genesisblock.index = 0;
    genesisblock.timestamp = time(NULL);
    genesisblock.nonce = 0;
    genesisblock.previousHash = NULL;
    genesisblock.hash = Hash_block(genesisblock);
+   // call tp printblock is made passing the genesis block which was just initialized above.
    printblock(genesisblock);
+
+  puts("\n\n");
+
+// proceeds to generate the next block
+   Block newblock = generate_block(genesisblock, genesisblock.nonce + 1);
+   printblock(newblock);
+
    // printf("My Blockchain project!\n");
     return 0;
 
