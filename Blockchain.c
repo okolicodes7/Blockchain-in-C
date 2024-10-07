@@ -63,22 +63,26 @@ Block generate_block(Block oldblock, int nonce){
 
 // fourth step 
  bool validate_block(Block newblock, Block oldblock){
-    if(newblock.index != oldblock.index + 1){
+    if((oldblock.index + 1) != newblock.index) {
         printf("INDEX NOT VALID\n");
         return false;
     }
-    if(oldblock.hash != newblock.previousHash){
-        printf("PREVIOUS HASH NOT VALID\n");
-        return false;
-    }
+  
 
     char hash1[SHA256_DIGEST_LENGTH];
     char hash2[SHA256_DIGEST_LENGTH];
 
-    strcpy(hash1, (char*)Hash_block(oldblock));
+ strcpy(hash1, (char*)oldblock.hash);
+ strcpy(hash2, (char*)newblock.hash);
+if (memcmp(hash1, hash2, SHA256_DIGEST_LENGTH) == 0) {     
+  printf("PREVIOUS HASH NOT VALID\n");
+        return false;
+}
+
+    strcpy(hash1, (char*)Hash_block(newblock));
     strcpy(hash2, (char*)newblock.hash);
 
-    if(memcmp(hash1, hash2, SHA_DIGEST_LENGTH) == 0){
+    if(memcmp(hash1, hash2, SHA256_DIGEST_LENGTH - 20) == 0){
         printf("NEW HASH NOT VALID\n");
         return false;
     }
@@ -129,13 +133,30 @@ void printblock(Block newblock) {
         if(newblock.hash != NULL){
             printf("%02X", newblock.hash[i]);
         }
+        
 }
   printf("\n");
+  
 
 }
+ 
 }
    
-
+ Block print_blockchain(Block blockchain[MAX_NUMBER_OF_BLOCKCHAIN]){
+    int i;
+    for(i = 0; i < MAX_NUMBER_OF_BLOCKCHAIN; i++){
+        if (blockchain[i].index != (size_t)i){
+        break;
+        }
+    
+      printblock(blockchain[i]);
+       if (i != 0){
+        printf("IS VALID: %d\n", validate_block(blockchain[i], blockchain[i-1]));
+       }
+       puts("\n\n");
+    }
+ };
+  
 
 
 
@@ -147,27 +168,47 @@ void printblock(Block newblock) {
 
 int main()
 {
-   // Block blockchain[MAX_NUMBER_OF_BLOCKCHAIN];
-
-   // initializing the different parameters passed in the block struct to form the GENESIS BLOCK
+   Block blockchain[MAX_NUMBER_OF_BLOCKCHAIN];
+   
+   //  initializing the different parameters passed in the block struct to form the GENESIS BLOCK
    Block genesisblock;
    genesisblock.index = 0;
    genesisblock.timestamp = time(NULL);
    genesisblock.nonce = 0;
    genesisblock.previousHash = NULL;
    genesisblock.hash = Hash_block(genesisblock);
-   // call tp printblock is made passing the genesis block which was just initialized above.
-   printblock(genesisblock);
+   // call to printblock is made passing the genesis block which was just initialized above.
+  // printblock(genesisblock);
 
-  puts("\n\n");
+  // puts("\n\n");
 
 // proceeds to generate the next block
- printblock(genesisblock);
+  // printf("My Blockchain project!\n");
+  
+    blockchain[genesisblock.index] = genesisblock;
+   Block newblock1 = generate_block(genesisblock, genesisblock.nonce + 1);
+   Block newblock2 = generate_block(newblock1, newblock1.nonce + 1);
+   Block newblock3 = generate_block(newblock2, newblock2.nonce + 1);
+   Block newblock4 = generate_block(newblock3, newblock3.nonce + 1);
+   Block newblock5 = generate_block(newblock4, newblock4.nonce + 1);
+   Block newblock6 = generate_block(newblock5, newblock5.nonce + 1);
+   
 
-   Block newblock = generate_block(genesisblock, genesisblock.nonce + 1);
-   printblock(newblock);
-   printf("IS VALID BLOCK: %d\n", validate_block(newblock, genesisblock));
 
+   blockchain[newblock1.index] = newblock1;
+   blockchain[newblock2.index] = newblock2;
+   blockchain[newblock3.index] = newblock3;
+   blockchain[newblock4.index] = newblock4;  
+   blockchain[newblock5.index] = newblock5;
+   blockchain[newblock6.index] = newblock6;
+  
+  print_blockchain(blockchain);
+  // printblock(newblock);
+   // printf("IS VALID BLOCK: %d\n", validate_block(newblock, genesisblock));
+  // printf("My Blockchain project!\n");
+  
+  
+  
    // printf("My Blockchain project!\n");
     return 0;
 
